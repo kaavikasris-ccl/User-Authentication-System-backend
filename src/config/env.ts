@@ -24,6 +24,11 @@ const envSchema = z.object({
   RATE_LIMIT_MAX: z.coerce
     .number()
     .default(100),
+
+    /**
+   * CORS
+   */
+  CORS_ORIGIN: z.string().default("*"),
 });
 
 export const env = envSchema.parse(process.env);

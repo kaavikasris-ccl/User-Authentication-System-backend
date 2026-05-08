@@ -1,5 +1,7 @@
 import express from "express";
-import routes from "@/routes";
+import userRoutes from "./routes/authroutes";
+import cors from "cors";
+import { config } from "@/config";
 import { errorMiddleware } from "@/middlewares/error.middleware";
 import { connectDB } from "@/infrastructure/database/prisma";
 import { apiRateLimiter } from "@/middlewares/rate-limit.middleware";
@@ -12,6 +14,13 @@ const app = express();
  * --------------------
  */
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: config.cors.origin,
+    credentials: config.cors.credentials,
+  })
+);
 
 /**
  * --------------------
@@ -32,7 +41,7 @@ app.use(apiRateLimiter);
  * Routes
  * --------------------
  */
-app.use("/api", routes);
+app.use("/api", userRoutes); // ✅ FIXED HERE
 
 /**
  * --------------------

@@ -1,18 +1,20 @@
-const express = require("express");
-const cors = require("cors");
+import http from "http";
 
-require("module-alias/register");
+import app from "./app";
+import { config } from "@/config";
 
-const authRoutes = require("./routes/authroutes");
+/**
+ * --------------------
+ * HTTP Server
+ * --------------------
+ */
+const server = http.createServer(app);
 
-const app = express();
-
-app.use(express.json());
-app.use(cors());
-
-// routes
-app.use("/auth", authRoutes);
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+/**
+ * --------------------
+ * Start Server
+ * --------------------
+ */
+server.listen(config.port, () => {
+  console.log(`Server running on ${config.port}`);
 });

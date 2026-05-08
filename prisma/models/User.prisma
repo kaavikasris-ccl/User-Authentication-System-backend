@@ -1,0 +1,13 @@
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+
+  // OTP fields
+  otp          Int?
+  otp_expiry   DateTime?
+
+  // timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

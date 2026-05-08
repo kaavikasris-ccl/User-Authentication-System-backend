@@ -2,12 +2,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "@/config/prismaClient";
 import { generateOtp, getOtpExpiry } from "@/core/utils/otp";
-
-const JWT_SECRET = process.env.JWT_SECRET || "secretkey";
+import { config } from "@/config";
+import { AppError } from "@/core/errors/app-error";
 
 class AuthService {
   /**
-   * REGISTER USER
+   * REGISTER
    */
   async register(input: { email: string; password: string }) {
     const { email, password } = input;
@@ -17,7 +17,7 @@ class AuthService {
     });
 
     if (existingUser) {
-      throw new Error("USER_ALREADY_EXISTS");
+      throw new AppError("User already exists", 409);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,7 +33,7 @@ class AuthService {
   }
 
   /**
-   * LOGIN USER
+   * LOGIN
    */
   async login(input: { email: string; password: string }) {
     const { email, password } = input;
@@ -43,26 +43,29 @@ class AuthService {
     });
 
     if (!user) {
-      throw new Error("USER_NOT_FOUND");
+      throw new AppError("User not found", 404);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      throw new Error("INVALID_PASSWORD");
+      throw new AppError("Invalid password", 401);
     }
 
+    /**
+     *  FIXED: store token properly
+     */
     const token = jwt.sign(
       { email: user.email },
-      JWT_SECRET,
-      { expiresIn: "1h" }
+      config.jwt.secret,
+      { expiresIn: config.jwt.expiresIn }
     );
 
     return token;
   }
 
   /**
-   * FORGOT PASSWORD (GENERATE OTP)
+   * FORGOT PASSWORD
    */
   async forgotPassword(email: string) {
     const user = await prisma.user.findUnique({
@@ -70,7 +73,7 @@ class AuthService {
     });
 
     if (!user) {
-      throw new Error("USER_NOT_FOUND");
+      throw new AppError("User not found", 404);
     }
 
     const otp = generateOtp();
@@ -94,7 +97,7 @@ class AuthService {
    */
   async verifyOtp(input: {
     email: string;
-    otp: number;
+    otp: string | number;
     newPassword: string;
   }) {
     const { email, otp, newPassword } = input;
@@ -104,14 +107,11 @@ class AuthService {
     });
 
     if (!user || user.otp !== Number(otp)) {
-      throw new Error("INVALID_OTP");
+      throw new AppError("Invalid OTP", 400);
     }
 
-    if (
-      !user.otp_expiry ||
-      new Date(user.otp_expiry) < new Date()
-    ) {
-      throw new Error("OTP_EXPIRED");
+    if (!user.otp_expiry || new Date(user.otp_expiry) < new Date()) {
+      throw new AppError("OTP expired", 410);
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -129,7 +129,7 @@ class AuthService {
   }
 
   /**
-   * RESET PASSWORD (OLD PASSWORD CHECK)
+   * RESET PASSWORD
    */
   async resetPassword(input: {
     email: string;
@@ -143,16 +143,13 @@ class AuthService {
     });
 
     if (!user) {
-      throw new Error("USER_NOT_FOUND");
+      throw new AppError("User not found", 404);
     }
 
-    const isMatch = await bcrypt.compare(
-      oldPassword,
-      user.password
-    );
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isMatch) {
-      throw new Error("OLD_PASSWORD_INCORRECT");
+      throw new AppError("Old password is incorrect", 401);
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

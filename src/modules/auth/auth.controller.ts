@@ -1,29 +1,30 @@
 import { Request, Response, NextFunction } from "express";
 import { authService } from "./auth.service";
+import { HTTP_STATUS } from "@/utils/httpStatus";
 
 /**
- * --------------------
- * Auth Controller
- * --------------------
- * Only handles request & response
+ * REGISTER
  */
-
 export const register = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await authService.register(req.body);
+    const user = await authService.register(req.body);
 
-    return res.status(201).json({
+    return res.status(HTTP_STATUS.CREATED).json({
       message: "User registered successfully",
+      data: user,
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
+/**
+ * LOGIN
+ */
 export const login = async (
   req: Request,
   res: Response,
@@ -32,47 +33,59 @@ export const login = async (
   try {
     const token = await authService.login(req.body);
 
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       message: "Login successful",
       token,
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
+/**
+ * FORGOT PASSWORD
+ */
 export const forgotPassword = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await authService.forgotPassword(req.body.email);
+    const { email } = req.body;
 
-    return res.status(200).json({
-      message: "OTP sent",
+    await authService.forgotPassword(email);
+
+    return res.status(HTTP_STATUS.OK).json({
+      message: "OTP sent successfully",
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
+/**
+ * VERIFY OTP
+ */
 export const verifyOtp = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await authService.verifyOtp(req.body);
+    const result = await authService.verifyOtp(req.body);
 
-    return res.status(200).json({
-      message: "Password updated successfully",
+    return res.status(HTTP_STATUS.OK).json({
+      message: "OTP verified successfully",
+      data: result,
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
+/**
+ * RESET PASSWORD
+ */
 export const resetPassword = async (
   req: Request,
   res: Response,
@@ -81,10 +94,10 @@ export const resetPassword = async (
   try {
     await authService.resetPassword(req.body);
 
-    return res.status(200).json({
-      message: "Password updated successfully",
+    return res.status(HTTP_STATUS.OK).json({
+      message: "Password changed successfully",
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
