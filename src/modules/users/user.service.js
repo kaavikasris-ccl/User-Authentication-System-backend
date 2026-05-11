@@ -2,8 +2,8 @@ import prisma from "@/config/prismaClient";
 import bcrypt from "bcrypt";
 
 class UserService {
-  async createUser(input: { name: string; email: string; password: string }) {
-    const { name, email, password } = input;
+  async createUser(input) {
+    const { id, email, password } = input;
 
     // check if user exists
     const existingUser = await prisma.user.findUnique({

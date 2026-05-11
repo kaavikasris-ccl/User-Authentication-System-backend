@@ -41,4 +41,4 @@ export const HTTP_STATUS = {
     statusCode: 500,
     message: "Internal Server Error",
   },
-} as const;
+};

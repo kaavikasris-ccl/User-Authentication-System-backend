@@ -1,30 +1,14 @@
-import { Response } from "express";
-
-export interface Meta {
-  correlation_id: string;
-  page?: number;
-  limit?: number;
-  total?: number;
-  total_pages?: number;
-  has_next?: boolean;
-  has_prev?: boolean;
-}
-
-export interface ErrorDetail {
-  general: string;
-}
-
 export class ResponseBuilder {
   /**
    * SUCCESS RESPONSE
    */
-  static success<T>(
-    res: Response,
-    data: T,
-    correlation_id: string,
+  static success(
+    res,
+    data,
+    correlation_id,
     statusCode = 200,
     message = "Success"
-  ): Response {
+  ) {
     return res.status(statusCode).json({
       data,
       error: null,
@@ -39,11 +23,11 @@ export class ResponseBuilder {
    * ERROR RESPONSE
    */
   static error(
-    res: Response,
-    message: string,
-    correlation_id: string,
+    res,
+    message,
+    correlation_id,
     statusCode = 400
-  ): Response {
+  ) {
     return res.status(statusCode).json({
       data: null,
       error: {

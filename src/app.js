@@ -1,10 +1,10 @@
 import express from "express";
-import userRoutes from "./routes/authroutes";
+import userRoutes from "./modules/auth/auth.routes.js";
 import cors from "cors";
-import { config } from "@/config";
-import { errorMiddleware } from "@/middlewares/error.middleware";
-import { connectDB } from "@/infrastructure/database/prisma";
-import { apiRateLimiter } from "@/middlewares/rate-limit.middleware";
+import { config } from "./config/index.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
+import { connectDB } from "./infrastructure/database/prisma.js";
+import { apiRateLimiter } from "./middlewares/rate-limit.middleware.js";
 
 const app = express();
 
@@ -41,7 +41,7 @@ app.use(apiRateLimiter);
  * Routes
  * --------------------
  */
-app.use("/api", userRoutes); // ✅ FIXED HERE
+app.use("/api", userRoutes);
 
 /**
  * --------------------

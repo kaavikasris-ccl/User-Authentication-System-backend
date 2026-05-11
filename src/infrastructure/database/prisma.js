@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { env } from "@/config/env";
+import { env } from "../../config/env.js";
 
 /**
  * --------------------
@@ -19,7 +19,7 @@ export const prisma = new PrismaClient({
  * Connect Database
  * --------------------
  */
-export const connectDB = async (): Promise<void> => {
+export const connectDB = async () => {
   try {
     await prisma.$connect();
     console.log("Database connected successfully");
@@ -34,11 +34,11 @@ export const connectDB = async (): Promise<void> => {
  * Disconnect Database
  * --------------------
  */
-export const disconnectDB = async (): Promise<void> => {
+export const disconnectDB = async () => {
   try {
     await prisma.$disconnect();
     console.log("Database disconnected");
   } catch (error) {
-    console.error(" Error disconnecting database:", error);
+    console.error("Error disconnecting database:", error);
   }
 };

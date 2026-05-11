@@ -1,7 +1,6 @@
 import http from "http";
-
-import app from "./app";
-import { config } from "@/config";
+import app from "./app.js";
+import { config } from "./config/index.js";
 
 /**
  * --------------------

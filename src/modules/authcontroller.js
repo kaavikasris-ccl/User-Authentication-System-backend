@@ -1,12 +1,12 @@
-import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "@/config/prismaClient";
-import { generateOtp, getOtpExpiry } from "../utils/otp";
-import { HTTP_STATUS } from "@/utils/httpStatus";
+import { generateOtp, getOtpExpiry } from "@/utils/otp.js";
+import { HTTP_STATUS } from "@/utils/httpStatus.js";
+
 const JWT_SECRET = process.env.JWT_SECRET || "secretkey";
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -19,17 +19,17 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(HTTP_STATUS.CREATED).json({
+    return res.status(HTTP_STATUS.CREATED.statusCode).json({
       message: "User registered successfully",
     });
   } catch (err) {
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode).json({
       message: "Error registering user",
     });
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -38,7 +38,7 @@ export const login = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({
+      return res.status(HTTP_STATUS.NOT_FOUND.statusCode).json({
         message: "User not found",
       });
     }
@@ -46,7 +46,7 @@ export const login = async (req: Request, res: Response) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      return res.status(HTTP_STATUS.UNAUTHORIZED.statusCode).json({
         message: "Invalid password",
       });
     }
@@ -55,25 +55,27 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: "1h",
     });
 
-    return res.status(HTTP_STATUS.OK).json({
+    return res.status(HTTP_STATUS.OK.statusCode).json({
       message: "Login successful",
       token,
     });
   } catch (err) {
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode).json({
       message: "Error logging in",
     });
   }
 };
 
-export const forgotPassword = async (req: Request, res: Response) => {
+export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
     if (!user) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({
+      return res.status(HTTP_STATUS.NOT_FOUND.statusCode).json({
         message: "User not found",
       });
     }
@@ -91,30 +93,37 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     console.log("OTP:", otp);
 
-    return res.status(HTTP_STATUS.OK).json({
+    return res.status(HTTP_STATUS.OK.statusCode).json({
       message: "OTP sent",
     });
   } catch {
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+    return res.status(
+      HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode
+    ).json({
       message: "Error sending OTP",
     });
   }
 };
 
-export const verifyOtp = async (req: Request, res: Response) => {
+export const verifyOtp = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
     if (!user || user.otp !== Number(otp)) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).json({
         message: "Invalid OTP",
       });
     }
 
-    if (!user.otp_expiry || new Date(user.otp_expiry) < new Date()) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+    if (
+      !user.otp_expiry ||
+      new Date(user.otp_expiry) < new Date()
+    ) {
+      return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).json({
         message: "OTP expired",
       });
     }
@@ -130,32 +139,41 @@ export const verifyOtp = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(HTTP_STATUS.OK).json({
+    return res.status(HTTP_STATUS.OK.statusCode).json({
       message: "Password updated successfully",
     });
   } catch {
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+    return res.status(
+      HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode
+    ).json({
       message: "Error verifying OTP",
     });
   }
 };
 
-export const resetPassword = async (req: Request, res: Response) => {
+export const resetPassword = async (req, res) => {
   try {
     const { email, oldPassword, newPassword } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
     if (!user) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({
+      return res.status(HTTP_STATUS.NOT_FOUND.statusCode).json({
         message: "User not found",
       });
     }
 
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    const isMatch = await bcrypt.compare(
+      oldPassword,
+      user.password
+    );
 
     if (!isMatch) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      return res.status(
+        HTTP_STATUS.UNAUTHORIZED.statusCode
+      ).json({
         message: "Old password is incorrect",
       });
     }
@@ -169,11 +187,13 @@ export const resetPassword = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(HTTP_STATUS.OK).json({
+    return res.status(HTTP_STATUS.OK.statusCode).json({
       message: "Password updated successfully",
     });
   } catch {
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+    return res.status(
+      HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode
+    ).json({
       message: "Error resetting password",
     });
   }

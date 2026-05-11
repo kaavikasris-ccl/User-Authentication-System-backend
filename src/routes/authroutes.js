@@ -1,13 +1,13 @@
-import express, { Router } from "express";
+import express from "express";
 import {
   register,
   login,
   forgotPassword,
   verifyOtp,
   resetPassword,
-} from "../modules/authcontroller";
+} from "../modules/authcontroller.js";
 
-const router: Router = express.Router();
+const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);

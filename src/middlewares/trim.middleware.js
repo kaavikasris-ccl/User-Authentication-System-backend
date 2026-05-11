@@ -1,6 +1,4 @@
-import { Request, Response, NextFunction } from "express";
-
-export const trimBody = (req: Request, res: Response, next: NextFunction) => {
+export const trimBody = (req, res, next) => {
   if (req.body && typeof req.body === "object") {
     Object.keys(req.body).forEach((key) => {
       const value = req.body[key];

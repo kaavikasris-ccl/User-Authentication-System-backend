@@ -1,12 +1,10 @@
-import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-import { env } from "@/config/env";
-
+import { env } from "../config/env.js";
 export const verifyToken = (
-  req: Request,
-  res: Response,
-  next: NextFunction
+  req,
+  res,
+  next
 ) => {
   const token = req.headers.authorization;
 

@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { env } from "@/config/env";
+import { env } from "../config/env.js";
 
 /**
  * --------------------
@@ -7,12 +7,9 @@ import { env } from "@/config/env";
  * --------------------
  */
 export const apiRateLimiter = rateLimit({
-  windowMs: env.RATE_LIMIT_WINDOW_MS * 60 * 1000,
-
+  windowMs: env.RATE_LIMIT_WINDOW_MS,
   max: env.RATE_LIMIT_MAX,
-
   message: {
     message: "Too many requests, please try again later.",
   },
-
 });

@@ -1,4 +1,8 @@
 import { z } from "zod";
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const envSchema = z.object({
   // Server
@@ -9,9 +13,9 @@ const envSchema = z.object({
 
   // JWT
   JWT_SECRET: z.string().min(32),
-    JWT_EXPIRES_IN: z
-  .enum(["15m", "1h", "7d"])
-  .default("1h"),
+  JWT_EXPIRES_IN: z
+    .enum(["15m", "1h", "7d"])
+    .default("1h"),
   
   // OTP
   OTP_EXPIRY_MINUTES: z.coerce.number().default(5),
@@ -25,10 +29,9 @@ const envSchema = z.object({
     .number()
     .default(100),
 
-    /**
-   * CORS
-   */
+  // CORS
   CORS_ORIGIN: z.string().default("*"),
 });
 
 export const env = envSchema.parse(process.env);
+export default env;
