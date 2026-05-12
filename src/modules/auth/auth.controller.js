@@ -95,8 +95,7 @@ export const forgotPassword = async (
 
     const { email } = req.body;
 
-    await authService
-      .forgotPassword(email);
+    const otp = await authService.forgotPassword(email);
 
     return res
       .status(
@@ -104,7 +103,8 @@ export const forgotPassword = async (
       )
       .json({
         message:
-          "OTP sent successfully",
+          "OTP sent",
+          otp:otp,
       });
 
   } catch (error) {
@@ -142,30 +142,28 @@ export const verifyOtp = async (
 /**
  * RESET PASSWORD
  */
-export const resetPassword = async (
-  req,
-  res,
-  next
-) => {
+export const resetPassword = async (req, res, next) => {
   try {
+    console.log("REQ BODY:", req.body);
+    console.log("TYPE OF EMAIL:", typeof req.body.email);
+    const { email, otp, newPassword } = req.body;
 
-    await authService
-      .resetPassword(req.body);
+    await authService.resetPasswordWithOtp({
+      email,
+      otp,
+      newPassword,
+    });
 
     return res
-      .status(
-        HTTP_STATUS.OK.statusCode
-      )
+      .status(HTTP_STATUS.OK.statusCode)
       .json({
-        message:
-          "Password changed successfully",
+        message: "Password updated successfully",
       });
 
   } catch (error) {
     next(error);
   }
 };
-
 /**
  * DELETE USER
  */

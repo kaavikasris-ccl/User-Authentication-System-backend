@@ -22,6 +22,8 @@ router.post("/login", login);
 
 router.get("/users", getUsers);
 
+router.post("/verify-otp", verifyOtp);
+
 router.post(
   "/forgot-password",
   forgotPassword

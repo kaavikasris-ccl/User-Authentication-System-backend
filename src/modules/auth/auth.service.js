@@ -11,21 +11,15 @@ class AuthService {
    * REGISTER
    */
   async register(input) {
-
     const { email, password } = input;
 
-    const existingUser =
-      await userRepository.findByEmail(email);
+    const existingUser = await userRepository.findByEmail(email);
 
     if (existingUser) {
-      throw new AppError(
-        "User already exists",
-        409
-      );
+      throw new AppError("User already exists", 409);
     }
 
-    const hashedPassword =
-      await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     await userRepository.createUser({
       email,
@@ -39,39 +33,24 @@ class AuthService {
    * LOGIN
    */
   async login(input) {
-
     const { email, password } = input;
 
-    const user =
-      await userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email);
 
     if (!user || !user.password) {
-      throw new AppError(
-        "User not found",
-        404
-      );
+      throw new AppError("User not found", 404);
     }
 
-    const isMatch =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      throw new AppError(
-        "Invalid password",
-        401
-      );
+      throw new AppError("Invalid password", 401);
     }
 
     const token = jwt.sign(
       { email: user.email },
       config.jwt.secret,
-      {
-        expiresIn:
-          config.jwt.expiresIn,
-      }
+      { expiresIn: config.jwt.expiresIn }
     );
 
     return token;
@@ -85,142 +64,91 @@ class AuthService {
   }
 
   /**
-   * FORGOT PASSWORD
+   * FORGOT PASSWORD (GENERATE OTP)
    */
   async forgotPassword(email) {
-
-    const user =
-      await userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email);
 
     if (!user) {
-      throw new AppError(
-        "User not found",
-        404
-      );
+      throw new AppError("User not found", 404);
     }
 
     const otp = generateOtp();
-
     const expiry = getOtpExpiry();
 
-    await userRepository.updateUser(
-      email,
-      {
-        otp: String(otp),
-        otpExpiry: expiry,
-      }
-    );
+    await userRepository.updateUser(email, {
+      otp: String(otp),
+      otpExpiry: expiry,
+    });
 
     console.log("OTP:", otp);
 
-    return true;
+    return otp;
   }
 
   /**
-   * VERIFY OTP
+   * RESET PASSWORD WITH OTP (🔥 FIXED VERSION)
    */
-  async verifyOtp(input) {
+  async resetPasswordWithOtp(input) {
 
-    const {
-      email,
-      otp,
-      newPassword,
-    } = input;
+    // ✅ FIX: always destructure FIRST
+    const email = input?.email;
+    const otp = input?.otp;
+    const newPassword = input?.newPassword;
 
-    const user =
-      await userRepository.findByEmail(email);
+    // 🚨 safety check (prevents your Prisma crash)
+    if (!email || typeof email !== "string") {
+      throw new AppError("Invalid email format", 400);
+    }
 
-    if (
-      !user ||
-      !user.otp ||
-      !user.otpExpiry
-    ) {
-      throw new AppError(
-        "Invalid OTP",
-        400
-      );
+    const user = await userRepository.findByEmail(email);
+
+    if (!user || !user.otp || !user.otpExpiry) {
+      throw new AppError("Invalid OTP", 400);
     }
 
     if (user.otp !== String(otp)) {
-      throw new AppError(
-        "Invalid OTP",
-        400
-      );
+      throw new AppError("Invalid OTP", 400);
     }
 
-    if (
-      user.otpExpiry < new Date()
-    ) {
-      throw new AppError(
-        "OTP expired",
-        410
-      );
+    if (user.otpExpiry < new Date()) {
+      throw new AppError("OTP expired", 410);
     }
 
-    const hashedPassword =
-      await bcrypt.hash(
-        newPassword,
-        10
-      );
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await userRepository.updateUser(
-      email,
-      {
-        password: hashedPassword,
-        otp: null,
-        otpExpiry: null,
-      }
-    );
+    await userRepository.updateUser(email, {
+      password: hashedPassword,
+      otp: null,
+      otpExpiry: null,
+    });
 
     return true;
   }
 
   /**
-   * RESET PASSWORD
+   * RESET PASSWORD (OLD FLOW - optional)
    */
   async resetPassword(input) {
+    const { email, oldPassword, newPassword } = input;
 
-    const {
-      email,
-      oldPassword,
-      newPassword,
-    } = input;
-
-    const user =
-      await userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email);
 
     if (!user || !user.password) {
-      throw new AppError(
-        "User not found",
-        404
-      );
+      throw new AppError("User not found", 404);
     }
 
-    const isMatch =
-      await bcrypt.compare(
-        oldPassword,
-        user.password
-      );
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isMatch) {
-      throw new AppError(
-        "Old password incorrect",
-        401
-      );
+      throw new AppError("Old password incorrect", 401);
     }
 
-    const hashedPassword =
-      await bcrypt.hash(
-        newPassword,
-        10
-      );
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await userRepository.updateUser(
-      email,
-      {
-        password: hashedPassword,
-      }
-    );
+    await userRepository.updateUser(email, {
+      password: hashedPassword,
+    });
 
     return true;
   }
@@ -229,15 +157,10 @@ class AuthService {
    * DELETE USER
    */
   async deleteUser(email) {
-
-    const user =
-      await userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email);
 
     if (!user) {
-      throw new AppError(
-        "User not found",
-        404
-      );
+      throw new AppError("User not found", 404);
     }
 
     await userRepository.deleteUser(email);
@@ -246,5 +169,4 @@ class AuthService {
   }
 }
 
-// ONLY ONE export - keep this one at the bottom
 export const authService = new AuthService();
