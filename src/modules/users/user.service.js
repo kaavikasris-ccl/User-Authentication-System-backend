@@ -19,12 +19,11 @@ class UserService {
 
     // create user
     const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    });
+  data: {
+    email,
+    password: hashedPassword,
+  },
+});
 
     console.log("CREATED USER:", newUser);
 

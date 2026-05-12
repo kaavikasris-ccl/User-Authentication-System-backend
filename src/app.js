@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: config.cors.origin,
-    credentials: config.cors.credentials,
+    credentials: true,
   })
 );
 
@@ -41,7 +41,7 @@ app.use(apiRateLimiter);
  * Routes
  * --------------------
  */
-app.use("/api", userRoutes);
+app.use("/api/auth", userRoutes);
 
 /**
  * --------------------

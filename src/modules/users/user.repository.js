@@ -2,22 +2,24 @@ import prisma from "../../config/prismaClient.js";
 
 class UserRepository {
 
+  // INSERT
   createUser(data) {
-    return prisma.user.create({
-      data,
-    });
+    return prisma.user.create({ data });
   }
 
+  // GET SINGLE USER
   findByEmail(email) {
     return prisma.user.findUnique({
       where: { email },
     });
   }
 
+  // GET ALL USERS
   getUsers() {
     return prisma.user.findMany();
   }
 
+  // UPDATE USER
   updateUser(email, data) {
     return prisma.user.update({
       where: { email },
@@ -25,6 +27,7 @@ class UserRepository {
     });
   }
 
+  // DELETE USER
   deleteUser(email) {
     return prisma.user.delete({
       where: { email },
@@ -32,5 +35,4 @@ class UserRepository {
   }
 }
 
-export const userRepository =
-  new UserRepository();
+export const userRepository = new UserRepository();

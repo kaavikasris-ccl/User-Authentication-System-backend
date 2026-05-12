@@ -1,32 +1,34 @@
-import { PrismaClient } from "@prisma/client";
+import { HTTP_STATUS } from "../../core/utils/httpStatus.js";
+import { userService } from "../services/user.service.js";
 
-const prisma = new PrismaClient();
-
-export const createUser = async (req, res) => {
+export const store = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
 
-    // DEBUG: check if API is hitting
     console.log("CONTROLLER HIT");
 
-    // INSERT INTO DATABASE
-    const user = await prisma.user.create({
-  data: {
-    email,
-    password,
-  },
-});
-    // DEBUG: check if insert worked
-    console.log("INSERTED USER:", user);
+    // CALL SERVICE
+    const user = await userService.createUser(
+      req.body
+    );
 
-    // SEND RESPONSE
-    return res.status(201).json(user);
+    console.log("CREATED USER:", user);
+
+    // RESPONSE
+    return res.status(
+      HTTP_STATUS.CREATED.statusCode
+    ).json({
+      message: HTTP_STATUS.CREATED.message,
+      data: user,
+    });
 
   } catch (error) {
+
     console.log("ERROR:", error);
 
-    return res.status(500).json({
-      message: "User creation failed",
+    return res.status(
+      HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode
+    ).json({
+      message: error.message,
     });
   }
 };

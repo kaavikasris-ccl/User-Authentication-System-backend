@@ -2,7 +2,7 @@ import { authService }
   from "./auth.service.js";
 
 import { HTTP_STATUS }
-  from "../../utils/httpStatus.js";
+  from "../../core/utils/httpStatus.js";
 
 /**
  * REGISTER
@@ -22,7 +22,7 @@ export const register = async (
       )
       .json({
         message:
-          "User registered successfully",
+          "Created",
       });
 
   } catch (error) {
@@ -48,7 +48,7 @@ export const login = async (
         HTTP_STATUS.OK.statusCode
       )
       .json({
-        message: "Login successful",
+        message: "OK",
         token,
       });
 
