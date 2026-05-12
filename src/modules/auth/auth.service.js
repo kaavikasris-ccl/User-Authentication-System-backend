@@ -87,16 +87,14 @@ class AuthService {
   }
 
   /**
-   * RESET PASSWORD WITH OTP (🔥 FIXED VERSION)
+   * RESET PASSWORD WITH OTP 
    */
   async resetPasswordWithOtp(input) {
 
-    // ✅ FIX: always destructure FIRST
     const email = input?.email;
     const otp = input?.otp;
     const newPassword = input?.newPassword;
 
-    // 🚨 safety check (prevents your Prisma crash)
     if (!email || typeof email !== "string") {
       throw new AppError("Invalid email format", 400);
     }
