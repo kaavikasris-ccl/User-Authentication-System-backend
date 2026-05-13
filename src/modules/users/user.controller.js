@@ -4,8 +4,6 @@ import { userService } from "@users/user.service.js";
 export const store = async (req, res) => {
   try {
 
-    console.log("CONTROLLER HIT");
-
     // CALL SERVICE
     const user = await userService.createUser(
       req.body
