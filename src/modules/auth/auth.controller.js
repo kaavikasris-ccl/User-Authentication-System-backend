@@ -141,8 +141,6 @@ export const verifyOtp = async (
  */
 export const resetPassword = async (req, res, next) => {
   try {
-    console.log("REQ BODY:", req.body);
-    console.log("TYPE OF EMAIL:", typeof req.body.email);
     const { email, otp, newPassword } = req.body;
 
     await authService.resetPasswordWithOtp({
