@@ -1,5 +1,4 @@
-import prisma from "../../config/prismaClient.js";
-
+import prisma from "@config/prismaClient.js";
 class UserRepository {
 
   // INSERT

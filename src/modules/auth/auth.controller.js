@@ -1,8 +1,5 @@
-import { authService }
-  from "./auth.service.js";
-
-import { HTTP_STATUS }
-  from "../../core/utils/httpStatus.js";
+import { authService } from "@auth/auth.service.js";
+import { HTTP_STATUS } from "@utils/httpStatus.js";
 
 /**
  * REGISTER

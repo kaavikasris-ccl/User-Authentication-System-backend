@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { userRepository } from "../users/user.repository.js";
-import { generateOtp, getOtpExpiry } from "../../core/utils/otp.js";
-import { config } from "../../config/index.js";
-import { AppError } from "../../core/errors/app-error.js";
+import { userRepository } from "@users/user.repository.js";
+import { generateOtp, getOtpExpiry } from "@utils/otp.js";
+import { config } from "@config/index.js";
+import { AppError } from "@errors/app-error.js";
 
 class AuthService {
 

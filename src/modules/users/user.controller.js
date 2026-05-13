@@ -1,5 +1,5 @@
-import { HTTP_STATUS } from "../../core/utils/httpStatus.js";
-import { userService } from "../services/user.service.js";
+import { HTTP_STATUS } from "@utils/httpStatus.js";
+import { userService } from "@users/user.service.js";
 
 export const store = async (req, res) => {
   try {

@@ -19,7 +19,19 @@
 
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["*"],
+      "@auth/*": ["modules/auth/*"],
+      "@config/*": ["config/*"],
+      "@utils/*": ["core/utils/*"],
+      "@errors/*": ["core/errors/*"],
+      "@constants/*": ["core/constants/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@modules/*": ["modules/*"],
+      "@users/*": ["modules/users/*"],
+      "@db/*": ["infrastructure/database/*"],
+      "@core/*": ["core/*"],
+      "@routes/*": ["routes/*"]
     }
-  }
+  },
+  "include": ["src"]
 }

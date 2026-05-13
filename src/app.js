@@ -1,10 +1,10 @@
 import express from "express";
-import userRoutes from "./modules/auth/auth.routes.js";
+import userRoutes from "@auth/auth.routes.js";
 import cors from "cors";
-import { config } from "./config/index.js";
-import { errorMiddleware } from "./middlewares/error.middleware.js";
-import { connectDB } from "./infrastructure/database/prisma.js";
-import { apiRateLimiter } from "./middlewares/rate-limit.middleware.js";
+import { config } from "@config/index.js";
+import { errorMiddleware } from "@middlewares/error.middleware.js";
+import { connectDB } from "@db/prisma.js";
+import { apiRateLimiter } from "@middlewares/rate-limit.middleware.js";
 
 const app = express();
 
