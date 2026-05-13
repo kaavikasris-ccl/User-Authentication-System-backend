@@ -121,9 +121,9 @@ export const verifyOtp = async (
   next
 ) => {
   try {
+    console.log("VERIFY OTP REQ BODY:", req.body); // ← ADD THIS
 
-    await authService
-      .verifyOtp(req.body);
+    await authService.resetPasswordWithOtp(req.body);
 
     return res
       .status(
