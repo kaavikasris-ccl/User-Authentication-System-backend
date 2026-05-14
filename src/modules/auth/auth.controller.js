@@ -64,14 +64,12 @@ export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
 
-    const otp = await authService.forgotPassword(email);
+    const otp = await authService.forgotPassword(email); 
 
-    return res
-      .status(HTTP_STATUS.OK.statusCode)
-      .json({
-        message: AUTH_MESSAGES.OTP_SENT,
-        otp: otp,
-      });
+    return res.status(HTTP_STATUS.OK.statusCode).json({
+      message: AUTH_MESSAGES.OTP_SENT,
+      otp, 
+    });
 
   } catch (error) {
     next(error);
@@ -83,13 +81,12 @@ export const forgotPassword = async (req, res, next) => {
  */
 export const verifyOtp = async (req, res, next) => {
   try {
-    await authService.resetPasswordWithOtp(req.body);
+    const token = await authService.verifyOtp(req.body);
 
-    return res
-      .status(HTTP_STATUS.OK.statusCode)
-      .json({
-        message: AUTH_MESSAGES.PASSWORD_UPDATED,
-      });
+    return res.status(HTTP_STATUS.OK.statusCode).json({
+      message: AUTH_MESSAGES.OTP_VERIFIED,
+      token, 
+    });
 
   } catch (error) {
     next(error);
@@ -101,19 +98,17 @@ export const verifyOtp = async (req, res, next) => {
  */
 export const resetPassword = async (req, res, next) => {
   try {
-    const { email, otp, new_password } = req.body;
+    const { email, otp_verified_token, new_password } = req.body;
 
-    await authService.resetPasswordWithOtp({
+    await authService.resetPassword({
       email,
-      otp,
+      otp_verified_token,
       new_password,
     });
 
-    return res
-      .status(HTTP_STATUS.OK.statusCode)
-      .json({
-        message: AUTH_MESSAGES.PASSWORD_UPDATED,
-      });
+    return res.status(HTTP_STATUS.OK.statusCode).json({
+      message: AUTH_MESSAGES.PASSWORD_UPDATED,
+    });
 
   } catch (error) {
     next(error);

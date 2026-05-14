@@ -54,10 +54,9 @@ class AuthService {
     );
 
     return {
-    token,
-    expiresIn:
-    config.jwt.expiresIn,
-  };
+      token,
+      expiresIn: config.jwt.expiresIn,
+    };
   }
 
   /**
@@ -81,7 +80,7 @@ class AuthService {
     const expiry = getOtpExpiry();
 
     await userRepository.updateUser(email, {
-      otp: String(otp),
+      otp: String(otp),       
       otpExpiry: expiry,
     });
 
@@ -90,71 +89,52 @@ class AuthService {
     return otp;
   }
 
-  /**
-   * RESET PASSWORD WITH OTP 
-   */
-  async resetPasswordWithOtp(input) {
+  async verifyOtp(input) {
+  const { email, otp } = input;
 
-    const email = input?.email;
-    const otp = input?.otp;
-    const new_password = input?.new_password;
+  const user = await userRepository.findByEmail(email);
 
-    if (!email || typeof email !== "string") {
-      throw new AppError("Invalid email format", 400);
-    }
+  if (!user) throw new AppError("User not found", 404);
 
-    const user = await userRepository.findByEmail(email);
+  if (!user.otp || !user.otpExpiry)
+    throw new AppError("OTP not requested", 400);
 
-    if (!user || !user.otp || !user.otpExpiry) {
-      throw new AppError("Invalid OTP", 400);
-    }
+  if (String(user.otp) !== String(otp))
+    throw new AppError("Invalid OTP", 400);
 
-    if (user.otp !== String(otp)) {
-      throw new AppError("Invalid OTP", 400);
-    }
+  if (new Date(user.otpExpiry) < new Date())
+    throw new AppError("OTP expired", 410);
 
-    if (user.otpExpiry < new Date()) {
-      throw new AppError("OTP expired", 410);
-    }
+  const token = jwt.sign(
+    { email },
+    config.jwt.secret,
+    { expiresIn: "10m" }
+  );
 
-    const hashedPassword = await bcrypt.hash(new_password, 10);
-
-    await userRepository.updateUser(email, {
-      password: hashedPassword,
-      otp: null,
-      otpExpiry: null,
-    });
-
-    return true;
-  }
+  return token;
+}
 
   /**
-   * RESET PASSWORD (OLD FLOW - optional)
+   * RESET PASSWORD WITH OTP (MAIN FLOW)
    */
   async resetPassword(input) {
-    const { email, oldPassword, new_password } = input;
+  const { email, otp_verified_token, new_password } = input;
 
-    const user = await userRepository.findByEmail(email);
+  const decoded = jwt.verify(otp_verified_token, config.jwt.secret);
 
-    if (!user || !user.password) {
-      throw new AppError("User not found", 404);
-    }
+  if (decoded.email !== email)
+    throw new AppError("Invalid token", 401);
 
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+  const hashedPassword = await bcrypt.hash(new_password, 10);
 
-    if (!isMatch) {
-      throw new AppError("Old password incorrect", 401);
-    }
+  await userRepository.updateUser(email, {
+    password: hashedPassword,
+    otp: null,
+    otpExpiry: null,
+  });
 
-    const hashedPassword = await bcrypt.hash(new_password, 10);
-
-    await userRepository.updateUser(email, {
-      password: hashedPassword,
-    });
-
-    return true;
-  }
-
+  return true;
+}
   /**
    * DELETE USER
    */
