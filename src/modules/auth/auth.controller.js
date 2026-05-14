@@ -1,25 +1,18 @@
 import { authService } from "@auth/auth.service.js";
 import { HTTP_STATUS } from "@utils/httpStatus.js";
+import { AUTH_MESSAGES } from "@constants/messages.js";
 
 /**
  * REGISTER
  */
-export const register = async (
-  req,
-  res,
-  next
-) => {
+export const register = async (req, res, next) => {
   try {
-
     await authService.register(req.body);
 
     return res
-      .status(
-        HTTP_STATUS.CREATED.statusCode
-      )
+      .status(HTTP_STATUS.CREATED.statusCode)
       .json({
-        message:
-          "Created",
+        message: AUTH_MESSAGES.USER_REGISTERED,
       });
 
   } catch (error) {
@@ -30,22 +23,14 @@ export const register = async (
 /**
  * LOGIN
  */
-export const login = async (
-  req,
-  res,
-  next
-) => {
+export const login = async (req, res, next) => {
   try {
-
-    const token =
-      await authService.login(req.body);
+    const token = await authService.login(req.body);
 
     return res
-      .status(
-        HTTP_STATUS.OK.statusCode
-      )
+      .status(HTTP_STATUS.OK.statusCode)
       .json({
-        message: "OK",
+        message: AUTH_MESSAGES.LOGIN_SUCCESS,
         token,
       });
 
@@ -57,20 +42,12 @@ export const login = async (
 /**
  * GET USERS
  */
-export const getUsers = async (
-  req,
-  res,
-  next
-) => {
+export const getUsers = async (req, res, next) => {
   try {
-
-    const users =
-      await authService.getUsers();
+    const users = await authService.getUsers();
 
     return res
-      .status(
-        HTTP_STATUS.OK.statusCode
-      )
+      .status(HTTP_STATUS.OK.statusCode)
       .json({
         data: users,
       });
@@ -83,25 +60,17 @@ export const getUsers = async (
 /**
  * FORGOT PASSWORD
  */
-export const forgotPassword = async (
-  req,
-  res,
-  next
-) => {
+export const forgotPassword = async (req, res, next) => {
   try {
-
     const { email } = req.body;
 
     const otp = await authService.forgotPassword(email);
 
     return res
-      .status(
-        HTTP_STATUS.OK.statusCode
-      )
+      .status(HTTP_STATUS.OK.statusCode)
       .json({
-        message:
-          "OTP sent",
-          otp:otp,
+        message: AUTH_MESSAGES.OTP_SENT,
+        otp: otp,
       });
 
   } catch (error) {
@@ -112,23 +81,14 @@ export const forgotPassword = async (
 /**
  * VERIFY OTP
  */
-export const verifyOtp = async (
-  req,
-  res,
-  next
-) => {
+export const verifyOtp = async (req, res, next) => {
   try {
-    console.log("VERIFY OTP REQ BODY:", req.body); // ← ADD THIS
-
     await authService.resetPasswordWithOtp(req.body);
 
     return res
-      .status(
-        HTTP_STATUS.OK.statusCode
-      )
+      .status(HTTP_STATUS.OK.statusCode)
       .json({
-        message:
-          "OTP verified successfully",
+        message: AUTH_MESSAGES.PASSWORD_UPDATED,
       });
 
   } catch (error) {
@@ -141,46 +101,38 @@ export const verifyOtp = async (
  */
 export const resetPassword = async (req, res, next) => {
   try {
-    const { email, otp, newPassword } = req.body;
+    const { email, otp, new_password } = req.body;
 
     await authService.resetPasswordWithOtp({
       email,
       otp,
-      newPassword,
+      new_password,
     });
 
     return res
       .status(HTTP_STATUS.OK.statusCode)
       .json({
-        message: "Password updated successfully",
+        message: AUTH_MESSAGES.PASSWORD_UPDATED,
       });
 
   } catch (error) {
     next(error);
   }
 };
+
 /**
  * DELETE USER
  */
-export const deleteUser = async (
-  req,
-  res,
-  next
-) => {
+export const deleteUser = async (req, res, next) => {
   try {
-
     const { email } = req.params;
 
-    await authService
-      .deleteUser(email);
+    await authService.deleteUser(email);
 
     return res
-      .status(
-        HTTP_STATUS.OK.statusCode
-      )
+      .status(HTTP_STATUS.OK.statusCode)
       .json({
-        message:
-          "User deleted successfully",
+        message: AUTH_MESSAGES.USER_DELETED,
       });
 
   } catch (error) {

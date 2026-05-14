@@ -16,24 +16,17 @@ export const AUTH_MESSAGES = {
 
   OTP_EXPIRED: "OTP expired",
 
-  PASSWORD_UPDATED:
-    "Password updated successfully",
+  PASSWORD_UPDATED:"Password updated successfully",
 
-  OLD_PASSWORD_INCORRECT:
-    "Old password is incorrect",
+  OLD_PASSWORD_INCORRECT:"Old password is incorrect",
 
-  REGISTER_ERROR:
-    "Error registering user",
+  REGISTER_ERROR:"Error registering user",
 
-  LOGIN_ERROR:
-    "Error logging in",
+  LOGIN_ERROR:"Error logging in",
 
-  OTP_ERROR:
-    "Error sending OTP",
+  OTP_ERROR: "Error sending OTP",
 
-  VERIFY_OTP_ERROR:
-    "Error verifying OTP",
+  VERIFY_OTP_ERROR: "Error verifying OTP",
 
-  RESET_PASSWORD_ERROR:
-    "Error resetting password",
+  RESET_PASSWORD_ERROR:"Error resetting password",
 };

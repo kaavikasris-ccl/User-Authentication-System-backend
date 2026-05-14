@@ -1,47 +1,17 @@
 import { Router } from "express";
+import {register,login,getUsers,forgotPassword,verifyOtp,deleteUser,} from "./auth.controller.js";
 
-import {
-  register,
-  login,
-  getUsers,
-  forgotPassword,
-  verifyOtp,
-  resetPassword,
-  deleteUser,
-} from "./auth.controller.js";
+import {registerSchema,loginSchema,forgotPasswordSchema,verifyOtpSchema,} from "./auth.validator.js";
+
+import { validate } from "@middlewares/validate.middleware.js";
 
 const router = Router();
 
-/**
- * AUTH ROUTES
- */
-
-router.post("/register", register);
-
-router.post("/login", login);
-
-router.get("/users", getUsers);
-
-router.post("/verify-otp", verifyOtp);
-
-router.post(
-  "/forgot-password",
-  forgotPassword
-);
-
-router.post(
-  "/verify-otp",
-  verifyOtp
-);
-
-router.post(
-  "/reset-password",
-  resetPassword
-);
-
-router.delete(
-  "/users/:email",
-  deleteUser
-);
+router.post("/register",validate(registerSchema),register);
+router.post("/login",validate(loginSchema), login);
+router.get("/users",getUsers);
+router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
+router.post("/verify-otp",validate(verifyOtpSchema),verifyOtp);
+router.delete("/users/:email",deleteUser);
 
 export default router;

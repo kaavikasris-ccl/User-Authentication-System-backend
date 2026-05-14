@@ -53,7 +53,11 @@ class AuthService {
       { expiresIn: config.jwt.expiresIn }
     );
 
-    return token;
+    return {
+    token,
+    expiresIn:
+    config.jwt.expiresIn,
+  };
   }
 
   /**
@@ -93,7 +97,7 @@ class AuthService {
 
     const email = input?.email;
     const otp = input?.otp;
-    const newPassword = input?.newPassword;
+    const new_password = input?.new_password;
 
     if (!email || typeof email !== "string") {
       throw new AppError("Invalid email format", 400);
@@ -113,7 +117,7 @@ class AuthService {
       throw new AppError("OTP expired", 410);
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(new_password, 10);
 
     await userRepository.updateUser(email, {
       password: hashedPassword,
@@ -128,7 +132,7 @@ class AuthService {
    * RESET PASSWORD (OLD FLOW - optional)
    */
   async resetPassword(input) {
-    const { email, oldPassword, newPassword } = input;
+    const { email, oldPassword, new_password } = input;
 
     const user = await userRepository.findByEmail(email);
 
@@ -142,7 +146,7 @@ class AuthService {
       throw new AppError("Old password incorrect", 401);
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(new_password, 10);
 
     await userRepository.updateUser(email, {
       password: hashedPassword,

@@ -68,7 +68,7 @@ export const verifyOtpSchema =
       message: "OTP must be a number",
     }),
 
-    newPassword: z
+    new_password: z
       .string()
       .min(
         8,
@@ -108,7 +108,7 @@ export const resetPasswordSchema =
         "Old password is required"
       ),
 
-    newPassword: z
+    new_password: z
       .string()
       .min(
         8,
