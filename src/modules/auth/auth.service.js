@@ -53,10 +53,7 @@ class AuthService {
       { expiresIn: config.jwt.expiresIn }
     );
 
-    return {
-      token,
-      expiresIn: config.jwt.expiresIn,
-    };
+    return token;
   }
 
   /**
